@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>怪物图鉴测试</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #FFF9EC;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #96E6B3;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.2s;
+        }
+        
+        .btn:hover {
+            background: #7dd3a0;
+        }
+        
+        .test-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>怪物图鉴功能测试</h1>
+        
+        <div class="test-info">
+            <h3>测试说明：</h3>
+            <p>1. 点击"遇到怪物"按钮模拟游戏中遇到不同类型的怪物</p>
+            <p>2. 点击"打开图鉴"查看已解锁的怪物信息</p>
+            <p>3. 图鉴中只显示已经遇到过的怪物，未遇到的显示为"???"</p>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <h3>模拟遇到怪物：</h3>
+            <button class="btn" onclick="encounterMonster('soldier')">遇到小兵</button>
+            <button class="btn" onclick="encounterMonster('tank')">遇到坦克</button>
+            <button class="btn" onclick="encounterMonster('flyer')">遇到飞行单位</button>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <h3>图鉴操作：</h3>
+            <button class="btn" onclick="openCodex()">打开图鉴</button>
+            <button class="btn" onclick="resetCodex()">重置图鉴</button>
+            <button class="btn" onclick="unlockAll()">解锁所有</button>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <h3>当前状态：</h3>
+            <div id="statusInfo" class="test-info">
+                <p>已遇到的怪物：<span id="encounteredList">无</span></p>
+                <p>未遇到的怪物：<span id="unencounteredList">小兵, 坦克, 飞行单位</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入必要的JS文件 -->
+    <script src="monster-codex.js"></script>
+    <script src="monster-codex-ui.js"></script>
+    
+    <script>
+        // 模拟遇到怪物
+        function encounterMonster(type) {
+            const isFirst = monsterCodex.encounterMonster(type);
+            if (isFirst) {
+                alert(`首次遇到: ${monsterCodex.getMonsterInfo(type).name}！`);
+            } else {
+                alert(`再次遇到: ${monsterCodex.getMonsterInfo(type).name}`);
+            }
+            updateStatus();
+        }
+        
+        // 打开图鉴
+        function openCodex() {
+            monsterCodexUI.open();
+        }
+        
+        // 重置图鉴
+        function resetCodex() {
+            monsterCodex.reset();
+            updateStatus();
+        }
+        
+        // 解锁所有怪物
+        function unlockAll() {
+            monsterCodex.unlockAll();
+            updateStatus();
+        }
+        
+        // 更新状态显示
+        function updateStatus() {
+            const encountered = monsterCodex.getEncounteredMonsters().map(type => 
+                monsterCodex.getMonsterInfo(type).name
+            );
+            const unencountered = monsterCodex.getUnencounteredMonsters().map(type => 
+                monsterCodex.getMonsterInfo(type).name
+            );
+            
+            document.getElementById('encounteredList').textContent = 
+                encountered.length > 0 ? encountered.join(', ') : '无';
+            document.getElementById('unencounteredList').textContent = 
+                unencountered.length > 0 ? unencountered.join(', ') : '全部已解锁';
+        }
+        
+        // 页面加载完成后初始化状态
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus();
+        });
+    </script>
+</body>
+</html> 

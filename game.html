@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>保卫萝卜 - 萌系塔防</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 10px;
+            background-color: #FFF9EC;
+            font-family: 'Noto Sans SC', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 800px;
+            max-width: 100%;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: #FFB84C;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+        
+        .info-item {
+            font-size: 16px;
+        }
+        
+        #gameCanvas {
+            border: 2px solid #96E6B3;
+            border-radius: 10px;
+            background: #FFF9EC;
+        }
+        
+        .controls {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            background: #96E6B3;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            background: #7dd3a0;
+        }
+        
+        .btn.sound-off {
+            background: #ff6b6b;
+        }
+        
+        .btn.sound-off:hover {
+            background: #ff5252;
+        }
+        
+        .btn.secondary {
+            background: #4ECDC4;
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+        
+        .btn.secondary:hover {
+            background: #36B5AA;
+        }
+        
+        .audio-controls {
+            margin-top: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 8px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            font-size: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .volume-control input[type="range"] {
+            width: 60px;
+        }
+        
+        .volume-control label {
+            font-size: 11px;
+        }
+        
+        .music-status {
+            margin-top: 4px;
+            padding: 4px 8px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        @media (max-width: 900px) {
+            .game-info {
+                width: 100%;
+                font-size: 14px;
+            }
+            .info-item {
+                font-size: 14px;
+            }
+            #gameCanvas {
+                width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-info">
+            <div class="info-item">波数: <span id="waveNumber">1</span>/<span id="totalWaves">5</span></div>
+            <div class="info-item">生命: <span id="lives">5</span></div>
+            <div class="info-item">金币: <span id="coins">100</span></div>
+            <div class="info-item">状态: <span id="gameStatus">准备中</span></div>
+        </div>
+        
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+        
+        <div class="controls">
+            <button class="btn" id="startBtn">开始游戏</button>
+            <button class="btn" id="pauseBtn">暂停</button>
+            <button class="btn" id="turretBtn">炮台管理</button>
+            <button class="btn" id="codexBtn">怪物图鉴</button>
+            <button class="btn" id="pathTestBtn">路径测试</button>
+            <button class="btn" id="soundToggleBtn">🔊 音效</button>
+        </div>
+        
+        <div class="audio-controls">
+            <div class="volume-control">
+                <label>主音量:</label>
+                <input type="range" id="masterVolumeSlider" min="0" max="100" value="70">
+                <span id="masterVolumeValue">70%</span>
+            </div>
+            <div class="volume-control">
+                <label>音效:</label>
+                <input type="range" id="effectVolumeSlider" min="0" max="100" value="80">
+                <span id="effectVolumeValue">80%</span>
+            </div>
+            <div class="volume-control">
+                <label>音乐:</label>
+                <input type="range" id="musicVolumeSlider" min="0" max="100" value="50">
+                <span id="musicVolumeValue">50%</span>
+            </div>
+            <button class="btn secondary" id="testSoundBtn">测试</button>
+            <button class="btn secondary" id="playMusicBtn">🎵 播放</button>
+            <button class="btn secondary" id="switchMusicBtn">🔄 切换</button>
+        </div>
+        
+        <div class="music-status">
+            <span>当前音乐: <span id="currentMusicDisplay">无</span></span> | 
+            <span>状态: <span id="musicStatusDisplay">停止</span></span>
+        </div>
+    </div>
+
+    <!-- 音效系统 -->
+    <script src="js/utils/audio-generator.js"></script>
+    <script src="js/systems/audio-manager.js"></script>
+    
+    <!-- 游戏核心 -->
+    <script src="js/systems/path-templates.js"></script>
+    <script src="js/systems/path.js"></script>
+    <script src="js/ui/path-ui.js"></script>
+    <script src="js/config/waveConfig.js"></script>
+    <script src="js/systems/monster.js"></script>
+    <script src="js/systems/monster-codex.js"></script>
+    <script src="js/ui/monster-codex-ui.js"></script>
+    <script src="js/systems/spawner.js"></script>
+    <script src="js/systems/turrets.js"></script>
+    <script src="js/ui/tower-ui.js"></script>
+    <script src="js/ui/end-panel.js"></script>
+    <script src="js/core/engine.js"></script>
+    
+    <script>
+        // 音效控制初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化音效管理器
+            audioManager.preloadSounds().then(() => {
+                console.log('🎵 音效系统初始化完成');
+                
+                // 自动开始播放背景音乐
+                setTimeout(() => {
+                    audioManager.playBackgroundMusic();
+                    updateMusicDisplay();
+                    console.log('🎵 开始播放背景音乐');
+                }, 1000); // 延迟1秒确保音效加载完毕
+            });
+            
+            // 音效开关按钮
+            const soundToggleBtn = document.getElementById('soundToggleBtn');
+            soundToggleBtn.addEventListener('click', function() {
+                const enabled = audioManager.toggleSound();
+                this.textContent = enabled ? '🔊 音效' : '🔇 音效';
+                this.classList.toggle('sound-off', !enabled);
+                
+                // 播放点击音效（如果开启了音效）
+                if (enabled) {
+                    audioManager.playUISound('button_click');
+                }
+            });
+            
+            // 主音量控制
+            const masterVolumeSlider = document.getElementById('masterVolumeSlider');
+            const masterVolumeValue = document.getElementById('masterVolumeValue');
+            masterVolumeSlider.addEventListener('input', function() {
+                const volume = this.value / 100;
+                audioManager.setMasterVolume(volume);
+                masterVolumeValue.textContent = this.value + '%';
+            });
+            
+            // 音效音量控制
+            const effectVolumeSlider = document.getElementById('effectVolumeSlider');
+            const effectVolumeValue = document.getElementById('effectVolumeValue');
+            effectVolumeSlider.addEventListener('input', function() {
+                const volume = this.value / 100;
+                audioManager.setEffectVolume(volume);
+                effectVolumeValue.textContent = this.value + '%';
+            });
+            
+            // 音乐音量控制
+            const musicVolumeSlider = document.getElementById('musicVolumeSlider');
+            const musicVolumeValue = document.getElementById('musicVolumeValue');
+            musicVolumeSlider.addEventListener('input', function() {
+                const volume = this.value / 100;
+                audioManager.setMusicVolume(volume);
+                musicVolumeValue.textContent = this.value + '%';
+            });
+            
+            // 测试音效按钮
+            const testSoundBtn = document.getElementById('testSoundBtn');
+            testSoundBtn.addEventListener('click', function() {
+                // 循环播放不同的测试音效
+                const testSounds = ['turret_single_shoot', 'monster_soldier_death', 'ui_button_click', 'ui_coin_earn'];
+                const randomSound = testSounds[Math.floor(Math.random() * testSounds.length)];
+                audioManager.testSound(randomSound);
+                
+                // 播放按钮点击音效
+                audioManager.playUISound('button_click');
+            });
+            
+            // 播放音乐按钮
+            const playMusicBtn = document.getElementById('playMusicBtn');
+            playMusicBtn.addEventListener('click', function() {
+                audioManager.playBackgroundMusic();
+                audioManager.playUISound('button_click');
+                updateMusicDisplay();
+            });
+            
+            // 切换音乐按钮
+            const switchMusicBtn = document.getElementById('switchMusicBtn');
+            switchMusicBtn.addEventListener('click', function() {
+                const currentInfo = audioManager.getCurrentMusicInfo();
+                if (currentInfo.isBossMusic) {
+                    audioManager.playBackgroundMusic(); // 切换到普通音乐
+                } else {
+                    audioManager.playBossBackgroundMusic(); // 切换到BOSS音乐
+                }
+                audioManager.playUISound('button_click');
+                updateMusicDisplay();
+            });
+            
+            // 更新音乐显示状态
+            function updateMusicDisplay() {
+                const musicInfo = audioManager.getCurrentMusicInfo();
+                const currentMusicDisplay = document.getElementById('currentMusicDisplay');
+                const musicStatusDisplay = document.getElementById('musicStatusDisplay');
+                
+                if (musicInfo.currentMusic) {
+                    const musicName = musicInfo.isBossMusic ? 'BOSS音乐 (Brainiac)' : '普通音乐 (L.S.传送带)';
+                    currentMusicDisplay.textContent = musicName;
+                    musicStatusDisplay.textContent = musicInfo.isPlaying ? '播放中' : '已暂停';
+                } else {
+                    currentMusicDisplay.textContent = '无';
+                    musicStatusDisplay.textContent = '停止';
+                }
+            }
+            
+            // 定期更新音乐状态显示
+            setInterval(updateMusicDisplay, 1000);
+            
+            // 为现有按钮添加点击音效
+            document.querySelectorAll('.btn').forEach(btn => {
+                if (btn.id !== 'soundToggleBtn' && btn.id !== 'testSoundBtn') {
+                    btn.addEventListener('click', function() {
+                        audioManager.playUISound('button_click');
+                    });
+                }
+            });
+            
+            // 读取并应用保存的音量设置
+            const settings = audioManager.getSettings();
+            masterVolumeSlider.value = Math.round(settings.masterVolume * 100);
+            masterVolumeValue.textContent = masterVolumeSlider.value + '%';
+            effectVolumeSlider.value = Math.round(settings.effectVolume * 100);
+            effectVolumeValue.textContent = effectVolumeSlider.value + '%';
+            musicVolumeSlider.value = Math.round(settings.musicVolume * 100);
+            musicVolumeValue.textContent = musicVolumeSlider.value + '%';
+            
+            // 更新音效按钮状态
+            soundToggleBtn.textContent = settings.enabled ? '🔊 音效' : '🔇 音效';
+            soundToggleBtn.classList.toggle('sound-off', !settings.enabled);
+        });
+    </script>
+</body>
+</html> 
