@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>萝卜保卫战 2 - 加载中...</title>
+    <meta http-equiv="refresh" content="0; url=./game.html">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Microsoft YaHei', sans-serif;
+            color: white;
+        }
+        .loading {
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        .loading h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .loading p {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading">
+        <h1>🥕 萝卜保卫战 2</h1>
+        <p>正在加载游戏...</p>
+        <p>如果没有自动跳转，请 <a href="./game.html" style="color: #FFD700;">点击这里</a></p>
+    </div>
+    
+    <script>
+        // 如果meta重定向不工作，用JavaScript重定向
+        setTimeout(() => {
+            window.location.href = './game.html';
+        }, 1000);
+    </script>
+</body>
+</html> 
