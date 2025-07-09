@@ -87,19 +87,7 @@ class MonsterCodex {
         return this.getAllMonsterTypes().filter(type => !this.hasEncountered(type));
     }
     
-    // 重置图鉴（用于测试）
-    reset() {
-        this.encounteredMonsters.clear();
-        console.log('怪物图鉴已重置');
-    }
-    
-    // 解锁所有怪物（用于测试）
-    unlockAll() {
-        this.getAllMonsterTypes().forEach(type => {
-            this.encounteredMonsters.add(type);
-        });
-        console.log('已解锁所有怪物');
-    }
+
 }
 
 // 创建全局怪物图鉴实例

@@ -391,6 +391,16 @@ class AudioManager {
         return this.settings.enabled;
     }
     
+    // 恢复背景音乐播放（用于取消静音后恢复音乐）
+    resumeBackgroundMusic() {
+        if (this.settings.enabled && this.currentMusic) {
+            console.log(`🎵 恢复播放背景音乐: ${this.currentMusic}`);
+            this.playSound(this.currentMusic);
+            return true;
+        }
+        return false;
+    }
+    
     // 更新所有音效的音量
     updateAllVolumes() {
         for (const soundName in this.sounds) {
@@ -430,11 +440,7 @@ class AudioManager {
         return { ...this.settings };
     }
     
-    // 创建简单的音效测试方法
-    testSound(soundName) {
-        console.log(`🧪 测试播放音效: ${soundName}`);
-        return this.playSound(soundName);
-    }
+
     
     // 便捷方法：播放炮台射击音效
     playTurretShoot(turretType) {

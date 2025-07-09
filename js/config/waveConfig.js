@@ -97,11 +97,11 @@ class WaveConfig {
             {
                 // 第6波：Boss波次
                 waveNumber: 6,
-                name: "最终决战",
+                name: "前夜序章",
                 description: "强大的敌人混合军团",
-                spawnMode: "boss", // Boss模式
+                spawnMode: "burst", 
                 spawnInterval: {
-                    min: 1500,  // Boss波间隔稍长
+                    min: 1500,  
                     max: 2500
                 },
                 monsters: [
@@ -112,7 +112,7 @@ class WaveConfig {
                 specialEffects: {
                     bossWave: true,
                     strengthBonus: 1.5, // 怪物强度加成50%
-                    description: "最终Boss降临！"
+                    description: "前夜的序章，敌人开始集结"
                 }
             },
             {

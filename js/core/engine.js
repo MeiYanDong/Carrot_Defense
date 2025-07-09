@@ -31,12 +31,12 @@ class GameEngine {
         this.preparationDelay = 5000; // 5秒准备时间
         this.isPreparing = false;
         
-        // 测试用移动点（展示路径效果）
-        this.testProgress = 0;
-        this.showTestMovement = false; // 默认关闭测试移动
+
         
         this.initializeEventListeners();
         this.updateUI();
+        
+
         
         // 立即开始游戏循环以显示路径
         this.gameLoop();
@@ -60,21 +60,27 @@ class GameEngine {
             monsterCodexUI.toggle();
         });
         
-        document.getElementById('pathTestBtn').addEventListener('click', () => {
-            pathTemplateUI.toggle();
-        });
+
         
         // Canvas点击事件（怪物攻击和炮台选择）
         this.canvas.addEventListener('click', (e) => {
             this.handleCanvasClick(e);
         });
+        
+
     }
     
     // 处理Canvas点击
     handleCanvasClick(e) {
         const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+        
+        // 将屏幕坐标转换为Canvas坐标
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        x = x * scaleX;
+        y = y * scaleY;
         
         // 首先检查是否点击了金币收集
         const collectedTurret = turretManager.checkGoldCollection(x, y);
@@ -94,14 +100,6 @@ class GameEngine {
         // 如果没有点击炮台，取消选择
         turretManager.selectTurret(null);
         towerUI.hideTurretInfo();
-        
-        // 查找点击的怪物（用于测试攻击）
-        const monster = monsterSpawner.getMonsterAt(x, y);
-        if (monster) {
-            // 测试：点击怪物造成伤害
-            const killed = monster.takeDamage(20);
-            console.log(`点击怪物 ${monster.name}，造成20伤害${killed ? '，怪物死亡！' : ''}`);
-        }
     }
     
     // 开始游戏
@@ -317,13 +315,7 @@ class GameEngine {
         // 检查波次完成状态
         this.checkWaveCompletion(deltaTime);
         
-        // 测试路径移动效果（可选）
-        if (this.showTestMovement) {
-            this.testProgress += deltaTime * 0.0005;
-            if (this.testProgress > 1) {
-                this.testProgress = 0;
-            }
-        }
+
     }
     
     // 检查波次完成状态
@@ -367,10 +359,7 @@ class GameEngine {
         // 渲染拖拽预览
         this.renderDragPreview();
         
-        // 渲染测试移动点（如果启用）
-        if (this.showTestMovement) {
-            this.renderTestMovement();
-        }
+
     }
     
     // 渲染拖拽预览
@@ -753,22 +742,7 @@ class GameEngine {
         this.ctx.globalAlpha = 1.0;
     }
     
-    // 渲染测试移动点
-    renderTestMovement() {
-        // 地面路径测试点
-        const groundPos = pathSystem.getPositionAtProgress('ground', this.testProgress);
-        this.ctx.fillStyle = '#FF6B6B';
-        this.ctx.beginPath();
-        this.ctx.arc(groundPos.x, groundPos.y, 8, 0, 2 * Math.PI);
-        this.ctx.fill();
-        
-        // 飞行路径测试点
-        const airPos = pathSystem.getPositionAtProgress('air', this.testProgress);
-        this.ctx.fillStyle = '#4ECDC4';
-        this.ctx.beginPath();
-        this.ctx.arc(airPos.x, airPos.y, 6, 0, 2 * Math.PI);
-        this.ctx.fill();
-    }
+
     
     // 添加金币
     addCoins(amount) {

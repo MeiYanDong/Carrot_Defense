@@ -286,7 +286,7 @@ class AudioGenerator {
         return buffer;
     }
     
-    // 播放生成的音效（测试用）
+    // 播放生成的音效
     async playGeneratedSound(type, subtype = null) {
         try {
             switch (type) {

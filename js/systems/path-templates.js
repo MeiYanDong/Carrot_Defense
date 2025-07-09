@@ -1,4 +1,4 @@
-// 路线模板模块 - 用于测试不同路径设计
+// 路线模板模块 - 管理游戏路径配置
 class PathTemplates {
     constructor() {
         this.templates = this.initializeTemplates();
@@ -56,10 +56,10 @@ class PathTemplates {
                 ]
             },
             
-            // 5. 简单直线（测试用）
+            // 5. 简单直线
             'straight': {
                 name: '直线路径',
-                description: '最简单的直线路径，用于测试',
+                description: '最简单的直线路径',
                 groundPath: [
                     { x: 50, y: 300 },   // 起点
                     { x: 750, y: 300 }   // 终点
@@ -245,43 +245,7 @@ class PathTemplates {
         }
     }
     
-    // 生成随机路径（用于测试）
-    generateRandomPath(complexity = 'medium') {
-        const canvasWidth = 800;
-        const canvasHeight = 500;
-        const margin = 50;
-        
-        let pointCount;
-        switch (complexity) {
-            case 'simple': pointCount = 3; break;
-            case 'medium': pointCount = 6; break;
-            case 'complex': pointCount = 10; break;
-            default: pointCount = 6;
-        }
-        
-        const groundPath = [];
-        
-        // 生成地面路径
-        groundPath.push({ x: margin, y: Math.random() * (canvasHeight - 2 * margin) + margin });
-        
-        for (let i = 1; i < pointCount - 1; i++) {
-            const x = (i / (pointCount - 1)) * (canvasWidth - 2 * margin) + margin;
-            const y = Math.random() * (canvasHeight - 2 * margin) + margin;
-            groundPath.push({ x: Math.round(x), y: Math.round(y) });
-        }
-        
-        groundPath.push({ x: canvasWidth - margin, y: Math.random() * (canvasHeight - 2 * margin) + margin });
-        
-        // 自动生成飞行路径
-        const airPath = this.generateAirPath(groundPath);
-        
-        return {
-            name: `随机路径_${Date.now()}`,
-            description: `${complexity}复杂度的随机生成路径`,
-            groundPath,
-            airPath
-        };
-    }
+
     
     // 删除模板
     removeTemplate(templateName) {

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>保卫萝卜 - 萌系塔防</title>
     <style>
         body {
@@ -98,28 +98,103 @@
         .audio-controls {
             margin-top: 8px;
             display: flex;
-            gap: 10px;
-            align-items: center;
-            padding: 8px;
-            background: #f0f0f0;
-            border-radius: 6px;
-            font-size: 12px;
-            flex-wrap: wrap;
             justify-content: center;
+            padding: 0;
+            background: transparent;
         }
         
-        .volume-control {
+        .volume-control-unified {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 12px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            border: 2px solid #96E6B3;
+            box-shadow: 0 2px 8px rgba(150, 230, 179, 0.2);
+            transition: all 0.2s ease;
         }
         
-        .volume-control input[type="range"] {
-            width: 60px;
+        .volume-control-unified:hover {
+            box-shadow: 0 3px 12px rgba(150, 230, 179, 0.3);
+            transform: translateY(-1px);
         }
         
-        .volume-control label {
-            font-size: 11px;
+        .volume-icon {
+            font-size: 22px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+            color: #96E6B3;
+            min-width: 24px;
+            text-align: center;
+        }
+        
+        .volume-icon:hover {
+            color: #7dd3a0;
+            transform: scale(1.1);
+        }
+        
+        .volume-icon.muted {
+            color: #FFB84C;
+            opacity: 0.8;
+        }
+        
+        .volume-control-unified input[type="range"] {
+            width: 120px;
+            height: 4px;
+            border-radius: 2px;
+            background: #f0f0f0;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            transition: background 0.2s ease;
+        }
+        
+        .volume-control-unified input[type="range"]:hover {
+            background: #e8e8e8;
+        }
+        
+        .volume-control-unified input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #96E6B3, #7dd3a0);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(150, 230, 179, 0.4);
+            border: 2px solid white;
+            transition: all 0.2s ease;
+        }
+        
+        .volume-control-unified input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 8px rgba(150, 230, 179, 0.6);
+        }
+        
+        .volume-control-unified input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #96E6B3, #7dd3a0);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(150, 230, 179, 0.4);
+            transition: all 0.2s ease;
+        }
+        
+        .volume-control-unified span {
+            font-weight: bold;
+            font-size: 13px;
+            min-width: 42px;
+            text-align: center;
+            color: #96E6B3;
+            background: #f8fffe;
+            padding: 2px 6px;
+            border-radius: 12px;
+            border: 1px solid #e8f5ec;
         }
         
         .music-status {
@@ -131,6 +206,63 @@
             color: #666;
         }
         
+        /* 横屏提示样式 */
+        .orientation-tip {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+        
+        .tip-content {
+            padding: 30px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .phone-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: shake 2s infinite;
+        }
+        
+        .tip-content h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.5rem;
+        }
+        
+        .tip-content p {
+            margin: 0 0 20px 0;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .rotate-hint {
+            font-size: 2rem;
+            animation: rotate 2s linear infinite;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 移动端基础适配 */
         @media (max-width: 900px) {
             .game-info {
                 width: 100%;
@@ -143,6 +275,121 @@
                 width: 100%;
                 height: auto;
             }
+            
+            /* 移动端按钮优化 */
+            .btn {
+                font-size: 16px;
+                padding: 12px 16px;
+                min-height: 44px;
+                margin: 4px;
+            }
+            
+            .controls {
+                gap: 12px;
+                padding: 0 10px;
+            }
+            
+            /* 音频控制在移动端的布局优化 */
+            .volume-control-unified {
+                gap: 10px;
+                padding: 6px 12px;
+                border-width: 2px;
+            }
+            
+            .volume-control-unified input[type="range"] {
+                width: 100px;
+            }
+            
+            .volume-icon {
+                font-size: 20px;
+                min-width: 22px;
+            }
+            
+            .volume-control-unified span {
+                min-width: 38px;
+                font-size: 12px;
+                padding: 2px 5px;
+            }
+        }
+        
+        /* 横屏移动端专用样式 - 优化游戏画面 */
+        @media screen and (max-width: 900px) and (orientation: landscape) {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            
+            .game-container {
+                padding: 5px;
+                width: 100vw;
+                max-width: none;
+                min-height: 100vh;
+                box-sizing: border-box;
+                justify-content: flex-start;
+            }
+            
+            .game-info {
+                margin-bottom: 3px;
+                padding: 4px 8px;
+                font-size: 12px;
+                width: 100%;
+            }
+            
+            .info-item {
+                font-size: 12px;
+            }
+            
+            /* 最大化游戏画布 */
+            #gameCanvas {
+                width: 100%;
+                max-width: 100%;
+                height: calc(100vh - 60px);
+                max-height: calc(100vh - 60px);
+                border-radius: 6px;
+            }
+            
+            /* 隐藏原有控制区域（移动端使用菜单） */
+            .controls {
+                display: none !important;
+            }
+            
+            .audio-controls {
+                display: none !important;
+            }
+            
+            .music-status {
+                display: none !important;
+            }
+        }
+        
+        /* 竖屏移动端 - 显示横屏提示优先 */
+        @media screen and (max-width: 900px) and (orientation: portrait) {
+            /* 保持原有样式，但隐藏控制区域 */
+            .controls {
+                display: none !important;
+            }
+            
+            .audio-controls {
+                display: none !important;
+            }
+            
+            .music-status {
+                display: none !important;
+            }
+        }
+        
+        /* 触摸设备特定样式 */
+        @media (hover: none) and (pointer: coarse) {
+            /* 移除hover效果，避免触摸时的状态异常 */
+            .btn:hover,
+            .turret-card:hover,
+            .close-btn:hover {
+                background: inherit;
+                transform: none;
+                box-shadow: none;
+            }
+            
+
         }
     </style>
 </head>
@@ -162,37 +409,19 @@
             <button class="btn" id="pauseBtn">暂停</button>
             <button class="btn" id="turretBtn">炮台管理</button>
             <button class="btn" id="codexBtn">怪物图鉴</button>
-            <button class="btn" id="pathTestBtn">路径测试</button>
-            <button class="btn" id="soundToggleBtn">🔊 音效</button>
         </div>
         
         <div class="audio-controls">
-            <div class="volume-control">
-                <label>主音量:</label>
+            <div class="volume-control-unified">
+                <div class="volume-icon" id="volumeIcon">🔊</div>
                 <input type="range" id="masterVolumeSlider" min="0" max="100" value="70">
                 <span id="masterVolumeValue">70%</span>
             </div>
-            <div class="volume-control">
-                <label>音效:</label>
-                <input type="range" id="effectVolumeSlider" min="0" max="100" value="80">
-                <span id="effectVolumeValue">80%</span>
-            </div>
-            <div class="volume-control">
-                <label>音乐:</label>
-                <input type="range" id="musicVolumeSlider" min="0" max="100" value="50">
-                <span id="musicVolumeValue">50%</span>
-            </div>
-            <button class="btn secondary" id="testSoundBtn">测试</button>
-            <button class="btn secondary" id="playMusicBtn">🎵 播放</button>
-            <button class="btn secondary" id="switchMusicBtn">🔄 切换</button>
-        </div>
-        
-        <div class="music-status">
-            <span>当前音乐: <span id="currentMusicDisplay">无</span></span> | 
-            <span>状态: <span id="musicStatusDisplay">停止</span></span>
         </div>
     </div>
 
+
+    
     <!-- 音效系统 -->
     <script src="js/utils/audio-generator.js"></script>
     <script src="js/systems/audio-manager.js"></script>
@@ -200,7 +429,7 @@
     <!-- 游戏核心 -->
     <script src="js/systems/path-templates.js"></script>
     <script src="js/systems/path.js"></script>
-    <script src="js/ui/path-ui.js"></script>
+
     <script src="js/config/waveConfig.js"></script>
     <script src="js/systems/monster.js"></script>
     <script src="js/systems/monster-codex.js"></script>
@@ -214,6 +443,11 @@
     <script>
         // 音效控制初始化
         document.addEventListener('DOMContentLoaded', function() {
+
+            
+            // 变量定义
+            let wasPlayingBeforeMute = false; // 记录静音前是否在播放音乐
+            
             // 初始化音效管理器
             audioManager.preloadSounds().then(() => {
                 console.log('🎵 音效系统初始化完成');
@@ -221,124 +455,98 @@
                 // 自动开始播放背景音乐
                 setTimeout(() => {
                     audioManager.playBackgroundMusic();
-                    updateMusicDisplay();
                     console.log('🎵 开始播放背景音乐');
                 }, 1000); // 延迟1秒确保音效加载完毕
             });
             
-            // 音效开关按钮
-            const soundToggleBtn = document.getElementById('soundToggleBtn');
-            soundToggleBtn.addEventListener('click', function() {
-                const enabled = audioManager.toggleSound();
-                this.textContent = enabled ? '🔊 音效' : '🔇 音效';
-                this.classList.toggle('sound-off', !enabled);
-                
-                // 播放点击音效（如果开启了音效）
-                if (enabled) {
-                    audioManager.playUISound('button_click');
-                }
-            });
-            
-            // 主音量控制
+            // 获取控制元素
+            const volumeIcon = document.getElementById('volumeIcon');
             const masterVolumeSlider = document.getElementById('masterVolumeSlider');
             const masterVolumeValue = document.getElementById('masterVolumeValue');
+            
+            // 更新图标显示
+            function updateVolumeIcon() {
+                const settings = audioManager.getSettings();
+                const volume = parseInt(masterVolumeSlider.value);
+                
+                if (!settings.enabled || volume === 0) {
+                    volumeIcon.textContent = '🔇';
+                    volumeIcon.classList.add('muted');
+                } else if (volume <= 30) {
+                    volumeIcon.textContent = '🔈';
+                    volumeIcon.classList.remove('muted');
+                } else if (volume <= 70) {
+                    volumeIcon.textContent = '🔉';
+                    volumeIcon.classList.remove('muted');
+                } else {
+                    volumeIcon.textContent = '🔊';
+                    volumeIcon.classList.remove('muted');
+                }
+            }
+            
+            // 音量图标点击事件 - 静音/取消静音
+            volumeIcon.addEventListener('click', function() {
+                const settings = audioManager.getSettings();
+                
+                if (settings.enabled) {
+                    // 当前开启，进行静音
+                    wasPlayingBeforeMute = audioManager.getCurrentMusicInfo().isPlaying;
+                    audioManager.toggleSound(); // 这会关闭所有音效
+                    console.log('🔇 静音状态，音乐播放状态:', wasPlayingBeforeMute);
+                } else {
+                    // 当前静音，取消静音
+                    audioManager.toggleSound(); // 这会开启音效
+                    
+                    // 恢复背景音乐播放
+                    setTimeout(() => {
+                        if (wasPlayingBeforeMute || audioManager.currentMusic) {
+                            // 使用新的恢复方法，或者重新播放背景音乐
+                            const resumed = audioManager.resumeBackgroundMusic();
+                            if (!resumed) {
+                                audioManager.playBackgroundMusic();
+                            }
+                            console.log('🎵 恢复播放背景音乐');
+                        }
+                    }, 100);
+                }
+                
+                updateVolumeIcon();
+                console.log(`🔊 音效 ${audioManager.getSettings().enabled ? '开启' : '关闭'}`);
+            });
+            
+            // 音量滑条控制
             masterVolumeSlider.addEventListener('input', function() {
                 const volume = this.value / 100;
                 audioManager.setMasterVolume(volume);
                 masterVolumeValue.textContent = this.value + '%';
-            });
-            
-            // 音效音量控制
-            const effectVolumeSlider = document.getElementById('effectVolumeSlider');
-            const effectVolumeValue = document.getElementById('effectVolumeValue');
-            effectVolumeSlider.addEventListener('input', function() {
-                const volume = this.value / 100;
-                audioManager.setEffectVolume(volume);
-                effectVolumeValue.textContent = this.value + '%';
-            });
-            
-            // 音乐音量控制
-            const musicVolumeSlider = document.getElementById('musicVolumeSlider');
-            const musicVolumeValue = document.getElementById('musicVolumeValue');
-            musicVolumeSlider.addEventListener('input', function() {
-                const volume = this.value / 100;
-                audioManager.setMusicVolume(volume);
-                musicVolumeValue.textContent = this.value + '%';
-            });
-            
-            // 测试音效按钮
-            const testSoundBtn = document.getElementById('testSoundBtn');
-            testSoundBtn.addEventListener('click', function() {
-                // 循环播放不同的测试音效
-                const testSounds = ['turret_single_shoot', 'monster_soldier_death', 'ui_button_click', 'ui_coin_earn'];
-                const randomSound = testSounds[Math.floor(Math.random() * testSounds.length)];
-                audioManager.testSound(randomSound);
                 
-                // 播放按钮点击音效
-                audioManager.playUISound('button_click');
-            });
-            
-            // 播放音乐按钮
-            const playMusicBtn = document.getElementById('playMusicBtn');
-            playMusicBtn.addEventListener('click', function() {
-                audioManager.playBackgroundMusic();
-                audioManager.playUISound('button_click');
-                updateMusicDisplay();
-            });
-            
-            // 切换音乐按钮
-            const switchMusicBtn = document.getElementById('switchMusicBtn');
-            switchMusicBtn.addEventListener('click', function() {
-                const currentInfo = audioManager.getCurrentMusicInfo();
-                if (currentInfo.isBossMusic) {
-                    audioManager.playBackgroundMusic(); // 切换到普通音乐
-                } else {
-                    audioManager.playBossBackgroundMusic(); // 切换到BOSS音乐
+                // 如果音量大于0且当前是静音状态，自动开启音效
+                if (volume > 0 && !audioManager.getSettings().enabled) {
+                    audioManager.toggleSound();
+                    wasPlayingBeforeMute = false; // 重置标志
+                    // 自动播放背景音乐
+                    setTimeout(() => {
+                        audioManager.playBackgroundMusic();
+                    }, 100);
                 }
-                audioManager.playUISound('button_click');
-                updateMusicDisplay();
-            });
-            
-            // 更新音乐显示状态
-            function updateMusicDisplay() {
-                const musicInfo = audioManager.getCurrentMusicInfo();
-                const currentMusicDisplay = document.getElementById('currentMusicDisplay');
-                const musicStatusDisplay = document.getElementById('musicStatusDisplay');
                 
-                if (musicInfo.currentMusic) {
-                    const musicName = musicInfo.isBossMusic ? 'BOSS音乐 (Brainiac)' : '普通音乐 (L.S.传送带)';
-                    currentMusicDisplay.textContent = musicName;
-                    musicStatusDisplay.textContent = musicInfo.isPlaying ? '播放中' : '已暂停';
-                } else {
-                    currentMusicDisplay.textContent = '无';
-                    musicStatusDisplay.textContent = '停止';
-                }
-            }
-            
-            // 定期更新音乐状态显示
-            setInterval(updateMusicDisplay, 1000);
+                updateVolumeIcon();
+            });
             
             // 为现有按钮添加点击音效
             document.querySelectorAll('.btn').forEach(btn => {
-                if (btn.id !== 'soundToggleBtn' && btn.id !== 'testSoundBtn') {
-                    btn.addEventListener('click', function() {
-                        audioManager.playUISound('button_click');
-                    });
-                }
+                btn.addEventListener('click', function() {
+                    audioManager.playUISound('button_click');
+                });
             });
             
             // 读取并应用保存的音量设置
             const settings = audioManager.getSettings();
             masterVolumeSlider.value = Math.round(settings.masterVolume * 100);
             masterVolumeValue.textContent = masterVolumeSlider.value + '%';
-            effectVolumeSlider.value = Math.round(settings.effectVolume * 100);
-            effectVolumeValue.textContent = effectVolumeSlider.value + '%';
-            musicVolumeSlider.value = Math.round(settings.musicVolume * 100);
-            musicVolumeValue.textContent = musicVolumeSlider.value + '%';
             
-            // 更新音效按钮状态
-            soundToggleBtn.textContent = settings.enabled ? '🔊 音效' : '🔇 音效';
-            soundToggleBtn.classList.toggle('sound-off', !settings.enabled);
+            // 初始化图标状态
+            updateVolumeIcon();
         });
     </script>
 </body>
